@@ -22,14 +22,14 @@ def fast_pow_mod(a, b, p):
         b = b // 2
     return res
  
-def setup_key():
+def setup_key(g, p):
     sk_Alice = random.randint(2, p - 1)
     dlp_Alice = fast_pow_mod(g, sk_Alice, p)
     s.send(str(dlp_Alice).encode())
     dlp_Bob = int(s.recv(1024).decode())
     return fast_pow_mod(dlp_Bob, sk_Alice, p)
- 
-sk_communicate = setup_key()
+    
+sk_communicate = setup_key(g, p)
  
 while True:
     Alice_msg = input("Alice: ")
