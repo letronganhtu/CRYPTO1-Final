@@ -10,3 +10,5 @@ Mã hóa với ascii và setup lại từ % 256 -> % 251 (251 là số nguyên t
 Giải thích lí do tại sao không gửi khóa là ma trận mà phải gửi khóa là kết quả của bài toán DLP
 2. Tạo ma trận
     - Nếu không tạo được thì gen key chung lại
+    - Ma trận 12x12 -> 1 block 12 kí tự được mã hóa (tính luôn kí tự khoảng trắng)
+    
