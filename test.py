@@ -63,4 +63,4 @@ key_matrix = np.dot(L, U)
 for i in range(0, 12):
     for j in range(0, 12):
         key_matrix[i][j] %= 251
-print(key_matrix)
+print(key_matrix) #
