@@ -27,7 +27,7 @@ def setup_key():
     dlp_Alice = fast_pow_mod(g, sk_Alice, p)
     s.send(str(dlp_Alice).encode())
     dlp_Bob = int(s.recv(1024).decode())
-    return fast_pow_mod(dlp_Bob, sk_Alice, p);
+    return fast_pow_mod(dlp_Bob, sk_Alice, p)
  
 sk_communicate = setup_key()
  
