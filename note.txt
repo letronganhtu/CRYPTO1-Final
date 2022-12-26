@@ -1,0 +1,12 @@
+Bob phải là người mở trước (giống server)
+Alice là người gửi tin nhắn đầu tiên
+Alice gửi sk_A đầu tiên
+p là số nguyên tố 1024 bits
+1. Tìm phần tử sinh
+    - Có được p
+    - Tìm g thoả g^{(p-1)/2}=-1 (mod p)
+Diffie-Hellman để trao đổi khoá
+Mã hóa với ascii và setup lại từ % 256 -> % 251 (251 là số nguyên tố)
+Giải thích lí do tại sao không gửi khóa là ma trận mà phải gửi khóa là kết quả của bài toán DLP
+2. Tạo ma trận
+    - Nếu không tạo được thì gen key chung lại
