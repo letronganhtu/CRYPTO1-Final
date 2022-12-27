@@ -71,6 +71,7 @@ def setup_key(g, p):
 
 sk_communicate = setup_key(g, p)
 block_size = 12
+print(sk_communicate)
  
 while True:
     Alice_msg = input("Alice: ")
@@ -81,5 +82,6 @@ while True:
     if count_message == 10:
         sk_communicate = setup_key(g, p)
         count_message = 0
+        print(sk_communicate)
  
 s.close()
