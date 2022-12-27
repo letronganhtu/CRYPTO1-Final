@@ -10,6 +10,7 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
+from encrypt_decrypt import encrypt, decrypt
  
 s = socket.socket()
 s.connect(("localhost", 1203))
@@ -75,9 +76,13 @@ print(sk_communicate)
  
 while True:
     Alice_msg = input("Alice: ")
+    Alice_msg = encrypt(Alice_msg, sk_communicate)
     s.send(Alice_msg.encode())
+
     Bob_msg = s.recv(1024)
+    Bob_msg = decrypt(Bob_msg, sk_communicate)
     print("Bob:", Bob_msg.decode())
+
     count_message += 2
     if count_message == 10:
         sk_communicate = setup_key(g, p)
