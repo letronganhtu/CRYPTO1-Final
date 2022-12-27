@@ -10,6 +10,8 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
+import Encryption
+import digitalSignature
 
 host = 'localhost'
 port = 1203
@@ -75,14 +77,24 @@ def setup_key(g, p):
     return key_matrix
  
 sk_communicate = setup_key(g, p)
-block_size = 12
-print(sk_communicate)
+sk_communicate = sk_communicate.astype(int)
+sk_inv = Encryption.matInvMod(sk_communicate, 251)
+sk_inv = sk_inv % 251
 
+print(sk_communicate)
 while True:
-    Alice_msg = c.recv(1024)
-    print("Alice:", Alice_msg.decode())
-    Bob_msg = input("Bob: ")
-    c.send(Bob_msg.encode())
+    msg_inp = c.recv(1024)
+    sign = int(c.recv(1024).decode())
+    Alice_msg = Encryption.decrypt(msg_inp.decode(encoding='utf-8'), sk_inv)
+    print("sign of message: ", sign)
+    if digitalSignature.verify(Alice_msg, sign, e, n):
+        print("Alice:", Alice_msg)
+    else:
+        print("message was changed")
+    msg_inp = input("Bob: ")
+    Bob_msg = Encryption.encrypt(msg_inp, sk_communicate)
+    c.send(Bob_msg.encode(encoding='utf-8'))
+    c.send(str(digitalSignature.sign(msg_inp, d, n)).encode())
     count_message += 2
     if count_message == 10:
         sk_communicate = setup_key(g, p)
