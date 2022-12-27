@@ -68,7 +68,7 @@ def setup_key(g, p):
         for j in range(0, 12):
             key_matrix[i][j] %= 251
     return key_matrix
- 
+
 sk_communicate = setup_key(g, p)
 block_size = 12
  
