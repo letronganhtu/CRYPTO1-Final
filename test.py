@@ -23,8 +23,6 @@ a = random.randint(2, p - 1)
 b = random.randint(2, p - 1)
 sk = fast_pow(fast_pow(g, a, p), b, p)
 temp = sk
-take_digit = 10
-count = 0
 L = np.zeros((12, 12))
 U = np.zeros((12, 12))
 
@@ -56,9 +54,6 @@ for i in range(0, 12):
         temp = temp // 100
         if temp == 0: temp = 101
 
-print(temp)
-print(L)
-print(U)
 key_matrix = np.dot(L, U)
 for i in range(0, 12):
     for j in range(0, 12):
