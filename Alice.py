@@ -10,9 +10,10 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
-import Encryption
-import digitalSignature
 
+from digitalSignature import RSAsign, RSAverify
+from encrypt_decrypt import encrypt, decrypt, matInvMod
+ 
 s = socket.socket()
 s.connect(("localhost", 1203))
 
@@ -73,21 +74,21 @@ def setup_key(g, p):
 
 sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
-sk_inv = Encryption.matInvMod(sk_communicate, 251)
+sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
 block_size = 12
 print(sk_communicate)
 
 while True:
     msg_inp = input("Alice: ")
-    Alice_msg = Encryption.encrypt(msg_inp, sk_communicate)
+    Alice_msg = encrypt(msg_inp, sk_communicate)
     s.send(Alice_msg.encode(encoding='utf-8'))
-    s.send(str(digitalSignature.sign(msg_inp, d, n)).encode())
+    s.send(str(RSAsign(msg_inp, d, n)).encode())
     msg_inp = s.recv(1024).decode(encoding='utf-8')
     sign = int(s.recv(1024).decode())
     print("sign of message: ", sign)
-    Bob_msg = Encryption.decrypt(msg_inp, sk_inv)
-    if digitalSignature.verify(Bob_msg, sign, e, n):
+    Bob_msg = decrypt(msg_inp, sk_inv)
+    if RSAverify(Bob_msg, sign, e, n):
         print("Bob:", Bob_msg)
     else:
         print("message was changed")

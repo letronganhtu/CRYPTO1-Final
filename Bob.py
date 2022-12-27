@@ -10,8 +10,8 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
-import Encryption
-import digitalSignature
+from digitalSignature import RSAsign, RSAverify
+from encrypt_decrypt import encrypt, decrypt, matInvMod
 
 host = 'localhost'
 port = 1203
@@ -78,23 +78,23 @@ def setup_key(g, p):
  
 sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
-sk_inv = Encryption.matInvMod(sk_communicate, 251)
+sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
 
 print(sk_communicate)
 while True:
     msg_inp = c.recv(1024)
     sign = int(c.recv(1024).decode())
-    Alice_msg = Encryption.decrypt(msg_inp.decode(encoding='utf-8'), sk_inv)
+    Alice_msg = decrypt(msg_inp.decode(encoding='utf-8'), sk_inv)
     print("sign of message: ", sign)
-    if digitalSignature.verify(Alice_msg, sign, e, n):
+    if RSAverify(Alice_msg, sign, e, n):
         print("Alice:", Alice_msg)
     else:
         print("message was changed")
     msg_inp = input("Bob: ")
-    Bob_msg = Encryption.encrypt(msg_inp, sk_communicate)
+    Bob_msg = encrypt(msg_inp, sk_communicate)
     c.send(Bob_msg.encode(encoding='utf-8'))
-    c.send(str(digitalSignature.sign(msg_inp, d, n)).encode())
+    c.send(str(RSAsign(msg_inp, d, n)).encode())
     count_message += 2
     if count_message == 10:
         sk_communicate = setup_key(g, p)
