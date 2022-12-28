@@ -104,6 +104,7 @@ while True:
 
     msg_inp = input("Bob: ")
     Bob_msg = encrypt(msg_inp, sk_communicate)
+    print(msg_inp, Bob_msg)
     c.send(Bob_msg.encode(encoding='utf-8'))
     c.send(str(RSAsign(msg_inp, d, n)).encode())
 

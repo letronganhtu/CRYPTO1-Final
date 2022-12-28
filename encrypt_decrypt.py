@@ -24,6 +24,9 @@ def matInvMod (vmnp, mod):
     return vmnpInv
 
 def encrypt(m, sk_communicate):
+    need = 12 - (len(m) % 12)
+    for i in range(need):
+        m += ''
     mchar = np.array([ord(x) for x in m])
     i = 0
     j = 12
@@ -44,7 +47,6 @@ def encrypt(m, sk_communicate):
     return ''.join(ciphertext)
 
 def decrypt(cipher, sk_inv):
-
     mchar = np.array([ord(x) for x in cipher])
     i = 0
     j = 12
@@ -61,5 +63,6 @@ def decrypt(cipher, sk_inv):
     for p in plain:
             for x in p:
                 plainC.append(chr(int(x[0] % 251)))
-
+    while plainC[-1] == '':
+        plainC.pop()
     return ''.join(plainC)
