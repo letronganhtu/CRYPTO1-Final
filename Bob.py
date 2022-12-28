@@ -15,6 +15,7 @@ from encrypt_decrypt import encrypt, decrypt, matInvMod
 
 host = 'localhost'
 port = 1203
+count_message = 0
 s = socket.socket()
 s.bind((host, port))
 s.listen(1)
@@ -88,7 +89,6 @@ e, d, n, eA, nA, sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
 sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
-dB = pow(eB, -1, phiB)
 
 print(sk_communicate)
 
