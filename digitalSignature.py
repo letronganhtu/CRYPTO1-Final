@@ -55,13 +55,13 @@ def genRSA(keyLength=512):
 
     return e, d, n
 
-def sign(doc, d, n):
+def RSAsign(doc, d, n):
     hdoc = hashlib.sha256(doc.encode())
     id = int.from_bytes(hdoc.digest(), 'big')
     s = fast_pow_mod(id, d, n)
     return s
 
-def verify(doc, s, e, n):
+def RSAverify(doc, s, e, n):
     hdoc = hashlib.sha256(doc.encode())
     id = int.from_bytes(hdoc.digest(), 'big')
     idrep = fast_pow_mod(s, e, n)
