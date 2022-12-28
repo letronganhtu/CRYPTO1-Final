@@ -15,7 +15,6 @@ from encrypt_decrypt import encrypt, decrypt, matInvMod
 
 host = 'localhost'
 port = 1203
- 
 s = socket.socket()
 s.bind((host, port))
 s.listen(1)
@@ -29,8 +28,6 @@ def fast_pow_mod(a, b, p):
         a = (a * a) % p
         b = b // 2
     return res
-
-count_message = 0
  
 def setup_key(g, p):
     
@@ -42,40 +39,44 @@ def setup_key(g, p):
 
     sk_Bob = random.randint(2, p - 1)
     dlp_Bob = fast_pow_mod(g, sk_Bob, p)
+
     dlp_Alice = int(c.recv(1024).decode())
+
     c.send(str(dlp_Bob).encode())
+
     sk = fast_pow_mod(dlp_Alice, sk_Bob, p)
-    temp = sk
+
+    # Create key_matrix
     L = np.zeros((12, 12))
     U = np.zeros((12, 12))
 
     # Generate diag(L)
     for i in range(0, 12):
-        temp1 = temp % 100
-        temp = temp // 100
+        temp1 = sk % 100
+        sk = sk // 100
         while temp1 == 0:
-            temp1 = temp % 100
-            temp = temp // 100
+            temp1 = sk % 100
+            sk = sk // 100
         L[i][i] = temp1
 
-    # Generate diag(R)
+    # Generate diag(U)
     for i in range(0, 12):
-        temp1 = temp % 100
-        temp = temp // 100
+        temp1 = sk % 100
+        sk = sk // 100
         while temp1 == 0:
-            temp1 = temp % 100
-            temp = temp // 100
+            temp1 = sk % 100
+            sk = sk // 100
         U[i][i] = temp1
 
-    # Generate L, R -> L: i > j, R: i < j
+   # Generate L, R (L: i > j && R: i < j)
     for i in range(0, 12):
         for j in range(i + 1, 12):
-            U[i][j] = temp % 100
-            temp = temp // 100
-            if temp == 0: temp = 1
-            L[j][i] = temp % 100
-            temp = temp // 100
-            if temp == 0: temp = 101
+            U[i][j] = sk % 100
+            sk = sk // 100
+            if sk == 0: sk = 1
+            L[j][i] = sk % 100
+            sk = sk // 100
+            if sk == 0: sk = 101
 
     key_matrix = np.dot(L, U)
     for i in range(0, 12):
@@ -87,6 +88,7 @@ e, d, n, eA, nA, sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
 sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
+dB = pow(eB, -1, phiB)
 
 print(sk_communicate)
 
