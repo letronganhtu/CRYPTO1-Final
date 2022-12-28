@@ -10,7 +10,7 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
-from digitalSignature import RSAsign, RSAverify
+from digitalSignature import RSAsign, RSAverify, genRSA
 from encrypt_decrypt import encrypt, decrypt, matInvMod
 
 host = 'localhost'
@@ -20,7 +20,7 @@ s = socket.socket()
 s.bind((host, port))
 s.listen(1)
 c, addr = s.accept()
- 
+
 def fast_pow_mod(a, b, p):
     res = 1
     while b:
@@ -33,6 +33,13 @@ def fast_pow_mod(a, b, p):
 count_message = 0
  
 def setup_key(g, p):
+    
+    e, d, n = genRSA(512)
+    eA = int(c.recv(1024).decode())
+    c.send(str(e).encode())
+    nA = int(c.recv(1024).decode())
+    c.send(str(n).encode())
+
     sk_Bob = random.randint(2, p - 1)
     dlp_Bob = fast_pow_mod(g, sk_Bob, p)
     dlp_Alice = int(c.recv(1024).decode())
@@ -74,27 +81,30 @@ def setup_key(g, p):
     for i in range(0, 12):
         for j in range(0, 12):
             key_matrix[i][j] %= 251
-    return key_matrix
+    return e, d, n, eA, nA, key_matrix
  
-sk_communicate = setup_key(g, p)
+e, d, n, eA, nA, sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
 sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
 
 print(sk_communicate)
+
 while True:
     msg_inp = c.recv(1024)
     sign = int(c.recv(1024).decode())
     Alice_msg = decrypt(msg_inp.decode(encoding='utf-8'), sk_inv)
-    print("sign of message: ", sign)
-    if RSAverify(Alice_msg, sign, e, n):
+
+    if RSAverify(Alice_msg, sign, eA, nA):
         print("Alice:", Alice_msg)
     else:
         print("message was changed")
+
     msg_inp = input("Bob: ")
     Bob_msg = encrypt(msg_inp, sk_communicate)
     c.send(Bob_msg.encode(encoding='utf-8'))
     c.send(str(RSAsign(msg_inp, d, n)).encode())
+
     count_message += 2
     if count_message == 10:
         sk_communicate = setup_key(g, p)
