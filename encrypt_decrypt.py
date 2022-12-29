@@ -1,22 +1,11 @@
 import numpy as np
 from sympy import Matrix
 
-# def matInvMod (vmnp, mod=251):
-#     nr = vmnp.shape[0]
-#     nc = vmnp.shape[1]
-#     if (nr!= nc):
-#         print ("Error: Non square matrix! exiting")
-#         exit()
-#     vmsym = Matrix(vmnp)
-#     vmsymInv = vmsym.inv_mod(mod)
-#     vmnpInv = np.array(vmsymInv)
-#     return vmnpInv
-
 def matInvMod (vmnp, mod):
     nr = vmnp.shape[0]
     nc = vmnp.shape[1]
     if (nr!= nc):
-        print ("Error: Non square matrix! exiting")
+        print ("Error: Non-square matrix! Exiting...")
         exit()
     vmsym = Matrix(vmnp)
     vmsymInv = vmsym.inv_mod(mod)

@@ -6,7 +6,7 @@ with open('parameter.txt', encoding = 'utf-8') as f:
         value = x[idx + 1:]
  
         exec("%s = %d" % (variable, int(value)))
- 
+
 import random
 import socket
 import numpy as np

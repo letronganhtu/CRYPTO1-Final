@@ -11,7 +11,6 @@ def fast_pow_mod(a, b, p):
     return res
 
 def miller_rabin(n, k):
-
     if n == 2 or n == 3:
         return True
 
