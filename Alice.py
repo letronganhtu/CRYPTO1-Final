@@ -114,5 +114,4 @@ while True:
         count_message = 0
         print(sk_communicate)
 
-f.close()
 s.close()
