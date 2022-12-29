@@ -10,8 +10,7 @@ with open('parameter.txt', encoding = 'utf-8') as f:
 import random
 import socket
 import numpy as np
-
-from digitalSignature import RSAsign, RSAverify, genRSA
+from digitalSignature import RSAsign, RSAverify, genRSA, fast_pow_mod
 from encrypt_decrypt import encrypt, decrypt, matInvMod
  
 s = socket.socket()
@@ -19,27 +18,17 @@ s.connect(("localhost", 1203))
 
 count_message = 0
 
-def fast_pow_mod(a, b, p):
-    res = 1
-    while b:
-        if b % 2 == 1:
-            res = (res * a) % p
-        a = (a * a) % p
-        b = b // 2
-    return res
+e, d, n = genRSA(512)
+s.send(str(e).encode())
+eB = int(s.recv(1024).decode())
+s.send(str(n).encode())
+nB = int(s.recv(1024).decode())
 
 def setup_key(g, p):
-    e, d, n = genRSA(512)
-    s.send(str(e).encode())
-    eB = int(s.recv(1024).decode())
-    s.send(str(n).encode())
-    nB = int(s.recv(1024).decode())
-
     sk_Alice = random.randint(2, p - 1)
     dlp_Alice = fast_pow_mod(g, sk_Alice, p)
 
     s.send(str(dlp_Alice).encode())
-
     dlp_Bob = int(s.recv(1024).decode())
 
     sk = fast_pow_mod(dlp_Bob, sk_Alice, p)
@@ -80,9 +69,9 @@ def setup_key(g, p):
     for i in range(0, 12):
         for j in range(0, 12):
             key_matrix[i][j] %= 251
-    return e, d, n, eB, nB, key_matrix
+    return key_matrix
 
-e, d, n, eB, nB, sk_communicate = setup_key(g, p)
+sk_communicate = setup_key(g, p)
 sk_communicate = sk_communicate.astype(int)
 sk_inv = matInvMod(sk_communicate, 251)
 sk_inv = sk_inv % 251
@@ -98,11 +87,10 @@ while True:
     msg_inp = s.recv(1024).decode(encoding='utf-8')
     sign = int(s.recv(1024).decode())
     Bob_msg = decrypt(msg_inp, sk_inv)
-
     if RSAverify(Bob_msg, sign, eB, nB):
         print("Bob:", Bob_msg)
     else:
-        print("message was changed")
+        print("Notification: Message is not belong to Bob")
         
     count_message += 2
     if count_message == 10:
